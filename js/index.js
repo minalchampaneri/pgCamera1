@@ -101,7 +101,7 @@ function uploadImages() {
     options.chunkedMode = false;
 
     var ft = new FileTransfer();
-    ft.upload(imageURI, "http://google.com/upload.php", win, fail, options);
+    ft.upload(imageURI, "http://213.94.214.248/offlineDemo/Home/UploadPhoto/", win, fail, options);
 }
 
 function win(r) {
