@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Bay PVT Contraventions</title>
+    <meta name="description" content="Mobile GTicket">
+    <meta name="author" content="Global Technical Services Ltd.">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <!-- Styling -->
+    <link href="Content/jQueryMobile.css" rel="stylesheet" />
+    <link href="Content/jQueryMobile.custom.min.css" rel="stylesheet" />      
+    <link href="Content/Handheld.css" rel="stylesheet" />
+
+    <!-- required libraries -->
+    <script src="Scripts/jquery-1.8.3.min.js"></script>
+    <script src="Scripts/jquery.mobile-1.2.0.min.js"></script>
+    <script src="Scripts/gticket/dataservice.js"></script>
+    <script src="Scripts/gticket/startup.js"></script>
+</head>
+<body>
+    <!-- Bay Contraventions -->
+    <div data-role="page" data-theme="a" id="bayContraventionsPage" data-title="Bay Contraventions">
+        <script src="Scripts/gticket/ticket.bay.contraventions.js"></script>
+        <div data-role="header" data-position="fixed" data-fullscreen="true">
+            <a href="#">STATUS</a>
+            <h1>ONLINE - 85%</h1>
+        </div>
+        <div data-role="content">
+            <div>
+                <ul data-role="listview" data-inset="false" id="contraventionsList"></ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
