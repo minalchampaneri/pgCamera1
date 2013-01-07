@@ -102,18 +102,29 @@ function uploadImages() {
 
     var ft = new FileTransfer();
     if(confirm('Are you sure to upload?'))
-        ft.upload(imageURI, "http://213.94.214.248/offlineDemo/Home/UploadPhoto/", win, fail, options);
+        ft.upload(imageURI, "http://213.94.214.248/hhImageService/ImageService.asmx/SaveImage", win, fail, options);
 }
 
 function win(r) {
-    console.log("Code = " + r.responseCode);
-    console.log("Response = " + r.response);
-    console.log("Sent = " + r.bytesSent);
-    alert(r.response);
+    //console.log("Code = " + r.responseCode); 
+            //console.log("Response = " + r.response); 
+            alert("Sent = " + r.bytesSent); 
 }
 
 function fail(error) {
-    alert("An error has occurred: Code = " = error.code);
+     switch (error.code) { 
+                    case FileTransferError.FILE_NOT_FOUND_ERR: 
+                        alert("Photo file not found"); 
+                        break; 
+                    case FileTransferError.INVALID_URL_ERR: 
+                        alert("Bad Photo URL"); 
+                        break; 
+                    case FileTransferError.CONNECTION_ERR: 
+                        alert("Connection error"); 
+                        break; 
+                } 
+
+            alert("An error has occurred: Code = " + error.code); 
 }
 
 function reset() {
