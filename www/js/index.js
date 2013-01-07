@@ -45,7 +45,7 @@ function onPhotoURISuccess(imageURI) {
 function capturePhoto() {
     // Take picture using device camera and retrieve image as base64-encoded string
     navigator.camera.getPicture(onPhotoDataSuccess, onFail, { quality: 10,
-        destinationType: destinationType.FILE_URI,
+        destinationType: navigator.camera.DestinationType.FILE_URI,
         saveToPhotoAlbum: true
         });
 }
@@ -53,9 +53,9 @@ function capturePhoto() {
 // A button will call this function
 function getPhoto(source) {
     // Retrieve image file location from specified source
-    navigator.camera.getPicture(onPhotoURISuccess, onFail, { quality: 10,
-        destinationType: destinationType.FILE_URI,
-        sourceType: source
+    navigator.camera.getPicture(onPhotoURISuccess, onFail, { quality: 50,
+        destinationType: navigator.camera.DestinationType.FILE_URI,
+        sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY
     });
 }
 // Called if something bad happens.
@@ -92,8 +92,8 @@ function uploadImages() {
     var imageURI = picsCollection[0];
     mLog(imageURI);
     var options = new FileUploadOptions();
-    options.fileKey = "file";
-    options.fileName = imageURI.substr(imageURI.lastIndexOf('/') + 1);
+    options.fileKey = "recFile";
+    options.fileName = Number(new Date()) + ".jpg"; //imageURI.substr(imageURI.lastIndexOf('/') + 1);
     options.mimeType = "image/jpeg";
 
     mLog(options.fileName);
@@ -141,4 +141,9 @@ function reset() {
 function mLog(msg) {
     alert(msg);
     console.log(msg);
+}
+
+function clearList() {
+    picsCollection.splice(0, picsCollection.length);
+    associatePhotos();
 }
