@@ -107,8 +107,11 @@ function uploadImages() {
     mLog("for file transfer");
     var ft = new FileTransfer();
     mLog("After initialiing ft");
-    if(confirm('Are you sure to upload image?'))
-        ft.upload(imageURI, "http://213.94.214.248/hhImageService/ImageService.asmx/SaveImage", win, fail, options);
+    var sURL = "http://213.94.214.248/HHUploadPhoto/Home/UploadPhoto";
+    //var sURL = "http://213.94.214.248/hhImageService/ImageService.asmx/SaveImage";
+
+    if (confirm('Are you sure to upload image?'))
+        ft.upload(imageURI, sURL , win, fail, options);
 }
 
 function win(r) {
