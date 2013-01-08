@@ -1,16 +1,16 @@
 var app = {
-    initialize: function() {
+    initialize: function () {
         this.bindEvents();
     },
-    
-    bindEvents: function() {
+
+    bindEvents: function () {
         document.addEventListener('deviceready', this.onDeviceReady, false);
     },
-    
-    onDeviceReady: function() {
+
+    onDeviceReady: function () {
         app.receivedEvent('deviceready');
     },
-    receivedEvent: function(id) {
+    receivedEvent: function (id) {
         pictureSource = navigator.camera.PictureSourceType;
         destinationType = navigator.camera.DestinationType;
     }
@@ -24,7 +24,7 @@ var picsCollection = new Array();
 
 // Called when a photo is successfully retrieved       
 function onPhotoDataSuccess(imageData) {
-    
+
     var largeImage = document.getElementById('largeImage');
     largeImage.style.display = 'block';
     largeImage.src = imageData;
@@ -34,7 +34,7 @@ function onPhotoDataSuccess(imageData) {
 
 // Called when a photo is successfully retrieved
 function onPhotoURISuccess(imageURI) {
-    
+
     var largeImage = document.getElementById('largeImage');
     largeImage.style.display = 'block';
     largeImage.src = imageURI;
@@ -47,7 +47,7 @@ function capturePhoto() {
     navigator.camera.getPicture(onPhotoDataSuccess, onFail, { quality: 10,
         destinationType: navigator.camera.DestinationType.FILE_URI,
         saveToPhotoAlbum: true
-        });
+    });
 }
 
 // A button will call this function
@@ -111,29 +111,29 @@ function uploadImages() {
     //var sURL = "http://213.94.214.248/hhImageService/ImageService.asmx/SaveImage";
 
     if (confirm('Are you sure to upload image?'))
-        ft.upload(imageURI, sURL , win, fail, options);
+        ft.upload(imageURI, sURL, win, fail, options);
 }
 
 function win(r) {
     //console.log("Code = " + r.responseCode); 
-            //console.log("Response = " + r.response); 
-            mLog("Sent = " + r.bytesSent); 
+    //console.log("Response = " + r.response); 
+    mLog("Sent = " + r.bytesSent);
 }
 
 function fail(error) {
-     switch (error.code) {
-         case FileTransferError.FILE_NOT_FOUND_ERR: 
-                        mLog("Photo file not found"); 
-                        break;
-                    case FileTransferError.INVALID_URL_ERR: 
-                        mLog("Bad Photo URL"); 
-                        break;
-                    case FileTransferError.CONNECTION_ERR: 
-                        mLog("Connection error"); 
-                        break; 
-                } 
+    switch (error.code) {
+        case FileTransferError.FILE_NOT_FOUND_ERR:
+            mLog("Photo file not found");
+            break;
+        case FileTransferError.INVALID_URL_ERR:
+            mLog("Bad Photo URL");
+            break;
+        case FileTransferError.CONNECTION_ERR:
+            mLog("Connection error");
+            break;
+    }
 
-            mLog("An error has occurred: Code = " + error.code); 
+    mLog("An error has occurred: Code = " + error.code);
 }
 
 function reset() {
@@ -150,3 +150,39 @@ function clearList() {
     picsCollection.splice(0, picsCollection.length);
     associatePhotos();
 }
+
+// --------------------------------------------------------
+function TcapturePhoto() {
+    navigator.camera.getPicture
+    (TuploadPhoto, function (message) { alert('get picture failed'); },
+        { quality: 50, destinationType: navigator.camera.DestinationType.FILE_URI, sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY }
+    );
+}
+
+function TuploadPhoto(imageURI) { 
+            var options = new FileUploadOptions(); 
+            options.fileKey="recFile"; 
+            var imagefilename = Number(new Date())+".jpg"; 
+            options.fileName=imagefilename; 
+            options.mimeType="image/jpeg"; 
+
+            var params = new Object(); 
+            params.value1 = "test"; 
+            params.value2 = "param"; 
+
+            options.params = params; 
+
+            var ft = new FileTransfer();
+            ft.upload(imageURI, "http://213.94.214.248/hhImageService/ImageService.asmx/SaveImage", Twin, Tfail, options); 
+        } 
+
+function Twin(r) { 
+            //console.log("Code = " + r.responseCode); 
+            //console.log("Response = " + r.response); 
+            alert("Sent = " + r.bytesSent); 
+        }
+
+        function Tfail(error) { 
+            
+            alert("An error has occurred: Code = " + error.code); 
+        } 
