@@ -209,19 +209,20 @@ function TchoosePhoto() {
       } 
 }
 
-function TuploadPhoto(imageURI) {
-    mLog(imageURI);
+function TuploadPhoto(img) {
+    var imageURI = img.src;
+            mLog(imageURI);
             var options = new FileUploadOptions(); 
             options.fileKey="recFile"; 
             var imagefilename = Number(new Date())+".jpg"; 
             options.fileName=imagefilename; 
             options.mimeType="image/jpeg;base64"; 
 
-            var params = new Object(); 
-            params.value1 = "test"; 
-            params.value2 = "param"; 
+//            var params = new Object(); 
+//            params.value1 = "test"; 
+//            params.value2 = "param"; 
 
-            options.params = params; 
+//            options.params = params; 
 
             var ft = new FileTransfer();
             ft.upload(imageURI, "http://213.94.214.248/hhImageService/ImageService.asmx/SameImage", Twin, Tfail, options); 
