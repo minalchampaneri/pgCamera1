@@ -94,46 +94,46 @@ function uploadImages() {
     var options = new FileUploadOptions();
     options.fileKey = "recFile";
     options.fileName = Number(new Date()) + ".jpg"; //imageURI.substr(imageURI.lastIndexOf('/') + 1);
-    options.mimeType = "image/jpeg";
+    options.mimeType = "image/jpeg;base64";
 
     mLog(options.fileName);
 
-    var params = new Object();
-    params.value1 = "AD00012345";
+//    var params = new Object();
+//    params.value1 = "AD00012345";
 
-    options.params = params;
+//    options.params = params;
     options.chunkedMode = false;
 
     mLog("for file transfer");
     var ft = new FileTransfer();
     mLog("After initialiing ft");
-    var sURL = "http://213.94.214.248/HHUploadPhoto/Home/UploadPhoto";
-    //var sURL = "http://213.94.214.248/hhImageService/ImageService.asmx/SaveImage";
+    //var sURL = "http://213.94.214.248/HHUploadPhoto/Home/UploadPhoto";
+    var sURL = encodeURI("http://213.94.214.248/hhImageService/ImageService.asmx/SaveImage");
 
     if (confirm('Are you sure to upload image?'))
         ft.upload(imageURI, sURL, win, fail, options);
 }
 
 function win(r) {
-    //console.log("Code = " + r.responseCode); 
-    //console.log("Response = " + r.response); 
+    mLog("Code = " + r.responseCode);
+    mLog("Response = " + r.response); 
     mLog("Sent = " + r.bytesSent);
 }
 
 function fail(error) {
-    switch (error.code) {
-        case FileTransferError.FILE_NOT_FOUND_ERR:
-            mLog("Photo file not found");
-            break;
-        case FileTransferError.INVALID_URL_ERR:
-            mLog("Bad Photo URL");
-            break;
-        case FileTransferError.CONNECTION_ERR:
-            mLog("Connection error");
-            break;
-    }
+//    switch (error.code) {
+//        case FileTransferError.FILE_NOT_FOUND_ERR:
+//            mLog("Photo file not found");
+//            break;
+//        case FileTransferError.INVALID_URL_ERR:
+//            mLog("Bad Photo URL");
+//            break;
+//        case FileTransferError.CONNECTION_ERR:
+//            mLog("Connection error");
+//            break;
+//    }
 
-    mLog("An error has occurred: Code = " + error.code);
+    mLog("An error has occurred: Code = " + error.code + "-" + error.source + "-" + error.target);
 }
 
 function reset() {
@@ -153,13 +153,64 @@ function clearList() {
 
 // --------------------------------------------------------
 function TcapturePhoto() {
-    navigator.camera.getPicture
-    (TuploadPhoto, function (message) { alert('get picture failed'); },
-        { quality: 50, destinationType: navigator.camera.DestinationType.FILE_URI, sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY }
-    );
+    navigator.camera.getPicture(
+       function(uri){
+          $('#camera_image').show();
+          var img = document.getElementById('camera_image');
+                  img.style.visibility = "visible"; 
+                      img.style.display = "block";
+                      img.src = uri;
+                      TuploadPhoto(img);
+                    alert("Success");
+        },
+        function (e) {
+            console.log("Error getting picture: " + e);
+        },
+        { quality: 50, destinationType: navigator.camera.DestinationType.FILE_URI }
+        
+        );
+
+          // Get URI of picture to upload 
+        var img = document.getElementById('camera_image');
+        var imageURI = img.src;
+        if (!imageURI || (img.style.display == "none")) 
+        {
+            alert("Take picture or select picture from library first.");
+            return; 
+        } 
 }
 
-function TuploadPhoto(imageURI) { 
+function TchoosePhoto() { 
+    navigator.camera.getPicture(
+          function(uri) 
+          {
+              $('#camera_image').show();
+              var img = document.getElementById('camera_image');
+              img.style.visibility = "visible"; 
+              img.style.display = "block";
+              img.src = uri;
+              TuploadPhoto(img);
+          },
+          function(e) 
+          {
+              console.log("Error getting picture: " + e);
+          },
+          { quality: 50, destinationType: navigator.camera.DestinationType.FILE_URI, sourceType:navigator.camera.PictureSourceType.SAVEDPHOTOALBUM}
+          );
+
+      // Get URI of picture to upload
+      var img = document.getElementById('camera_image');
+      var imageURI = img.src;
+      
+      if (!imageURI || (img.style.display == "none")) 
+      {
+          alert("please select a pic first");
+          return;
+      } 
+}
+
+function TuploadPhoto(imageURI) {
+    mLog(imageURI);
             var options = new FileUploadOptions(); 
             options.fileKey="recFile"; 
             var imagefilename = Number(new Date())+".jpg"; 
@@ -173,7 +224,7 @@ function TuploadPhoto(imageURI) {
             options.params = params; 
 
             var ft = new FileTransfer();
-            ft.upload(imageURI, "http://my.server.co.nz/pages/fileupload", Twin, Tfail, options); 
+            ft.upload(imageURI, "http://213.94.214.248/hhImageService/ImageService.asmx/SameImage", Twin, Tfail, options); 
         } 
 
 function Twin(r) { 
