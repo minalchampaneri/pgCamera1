@@ -164,7 +164,7 @@ function TuploadPhoto(imageURI) {
             options.fileKey="recFile"; 
             var imagefilename = Number(new Date())+".jpg"; 
             options.fileName=imagefilename; 
-            options.mimeType="image/jpeg"; 
+            options.mimeType="image/jpeg;base64"; 
 
             var params = new Object(); 
             params.value1 = "test"; 
@@ -173,7 +173,7 @@ function TuploadPhoto(imageURI) {
             options.params = params; 
 
             var ft = new FileTransfer();
-            ft.upload(imageURI, "http://213.94.214.248/hhImageService/ImageService.asmx/SaveImage", Twin, Tfail, options); 
+            ft.upload(imageURI, "http://my.server.co.nz/pages/fileupload", Twin, Tfail, options); 
         } 
 
 function Twin(r) { 
@@ -182,7 +182,7 @@ function Twin(r) {
             alert("Sent = " + r.bytesSent); 
         }
 
-        function Tfail(error) { 
-            
-            alert("An error has occurred: Code = " + error.code); 
-        } 
+        function Tfail(error) {
+            //JSON.stringify(error);
+            alert("An error has occurred: Code = " + error.code + "-" + error.source + "-" + error.target); 
+        }
