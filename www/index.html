@@ -78,7 +78,7 @@
                 // Transfer picture to server
                 var ft = new FileTransfer();
                 ft.upload(imageURI, server, function (r) {
-                    document.getElementById('camera_status').innerHTML = "Upload successful: " + r.bytesSent + " bytes uploaded.";
+                    document.getElementById('camera_status').innerHTML = "Upload successful: " + r.bytesSent + " bytes uploaded.[" + r.responseCode + "]-[" + r.response + "]";
                 }, function (error) {
                     document.getElementById('camera_status').innerHTML = "Upload failed: Code = " + error.code + "-" + error.source + "-" + error.target;
                 }, options);
