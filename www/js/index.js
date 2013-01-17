@@ -5,6 +5,8 @@ var app = {
 
     bindEvents: function () {
         document.addEventListener('deviceready', this.onDeviceReady, false);
+        document.addEventListener("online", onOnline, false);
+        document.addEventListener("offline", onOffline, false);
     },
 
     onDeviceReady: function () {
@@ -35,7 +37,7 @@ function refreshPicList() {
 
     for (i = 0; i < picsCollection.length; i++) {
 
-        dHTML += "<div style='width:100%;float:left;'><div style='float:left'><img src='"+ picsCollection[i] +"' height='80px' width='80px' /></div><div style='float:left'><input type='checkbox' id='"+i+"' style='width:15px;'/>Image "+ (i+1) +"</div></div>";
+        dHTML += "<div style='width:100%;float:left;'><div style='float:left'><img src='" + picsCollection[i] + "' height='80px' width='80px' /></div><div style='float:left'><input type='checkbox' id='" + i + "' style='width:15px;'/>Image " + (i + 1) + "</div></div>";
     }
     document.getElementById("divPicList").innerHTML = dHTML;
 }
@@ -52,51 +54,67 @@ function uploadPicture() {
     var chkList = parent.getElementsByTagName("input");
     server = document.getElementById('serverUrl').value;
 
+    if (navigator.onLine) {
+        mLog("Device is online and is about to start uploading");
+    }
+    else {
+        mLog("Device is offline and can not send images to server.It will be sent when internet is available.");
+    }
+    var selectURIs = new Array();
+
     var imageURI = "";
     for (j = 0; j < chkList.length; j++) {
         if (chkList[j].checked) {
             imageURI = picsCollection[j];
 
-            alert(imageURI);
+            if (navigator.onLine) {
+                // Specify transfer options
+                var options = new FileUploadOptions();
+                options.fileKey = "file";
+                options.fileName = imageURI.substr(imageURI.lastIndexOf('/') + 1);
+                options.mimeType = "image/jpeg";
+                options.chunkedMode = false;
 
-            // Specify transfer options
-            var options = new FileUploadOptions();
-            options.fileKey = "file";
-            options.fileName = imageURI.substr(imageURI.lastIndexOf('/') + 1);
-            options.mimeType = "image/jpeg";
-            options.chunkedMode = false;
-
-            // Transfer picture to server
-            var ft = new FileTransfer();
-            ft.upload(imageURI, server, function (r) {
-                document.getElementById('camera_status').innerHTML = "Upload successful: " + r.bytesSent + " bytes uploaded.[" + r.responseCode + "]-[" + r.response + "]";
-            }, function (error) {
-                document.getElementById('camera_status').innerHTML = "Upload failed: Code = " + error.code + "-" + error.source + "-" + error.target;
-            }, options);
-
+                // Transfer picture to server
+                var ft = new FileTransfer();
+                ft.upload(imageURI, server, function (r) {
+                    document.getElementById('camera_status').innerHTML = "Upload successful: " + r.bytesSent + " bytes uploaded.[" + r.responseCode + "]-[" + r.response + "]";
+                }, function (error) {
+                    document.getElementById('camera_status').innerHTML = "Upload failed: Code = " + error.code + "-" + error.source + "-" + error.target;
+                }, options);
+            }
+            else {
+                selectURIs.push(imageURI);
+            }
         }
     }
-    return;       
+
+    if (selectURIs.length > 0) {
+        // Need to store them offline and will use when back to online.
+        tsk_ns.storage.saveItem("oImagesToUpload", JSON.stringify(selectURIs));
+    }
+
+    return;
 }
 
 function win(r) {
     mLog("Code = " + r.responseCode);
-    mLog("Response = " + r.response); 
+    mLog("Response = " + r.response);
     mLog("Sent = " + r.bytesSent);
 }
 
 function fail(error) {
-//    switch (error.code) {
-//        case FileTransferError.FILE_NOT_FOUND_ERR:
-//            mLog("Photo file not found");
-//            break;
-//        case FileTransferError.INVALID_URL_ERR:
-//            mLog("Bad Photo URL");
-//            break;
-//        case FileTransferError.CONNECTION_ERR:
-//            mLog("Connection error");
-//            break;
-//    }
+    //    switch (error.code) {
+    //        case FileTransferError.FILE_NOT_FOUND_ERR:
+    //            mLog("Photo file not found");
+    //            break;
+    //        case FileTransferError.INVALID_URL_ERR:
+    //            mLog("Bad Photo URL");
+    //            break;
+    //        case FileTransferError.CONNECTION_ERR:
+    //            mLog("Connection error");
+    //            break;
+    //    }
 
     mLog("An error has occurred: Code = " + error.code + "-" + error.source + "-" + error.target);
 }
@@ -104,14 +122,60 @@ function fail(error) {
 function reset() {
     document.getElementById("camera").style.display = "block";
     document.getElementById("picList").style.display = "none";
+
 }
 
 function mLog(msg) {
-    //alert(msg);
+    alert(msg);
     console.log(msg);
 }
 
 function clearList() {
     picsCollection.splice(0, picsCollection.length);
-    associatePhotos();
+    refreshPicList();
+}
+
+function onOnline() {
+    // Handle the online event
+    mLog("Device is online.");
+    if (tsk_ns.storage.getItem("oImagesToUpload") != null) {
+        if (confirm("You apear online now and you have unsent photos, do you want to send it now?")) {
+            sendOfflineImages();
+        }
+    }
+}
+
+function onOffline() {
+    // Handle the offline event
+    mLog("Device is offline.");
+}
+
+function sendOfflineImages() {
+    var chkList = JSON.parse(tsk_ns.storage.getItem("oImagesToUpload"));
+
+    mLog(chkList.length + " images to upload");
+    server = document.getElementById('serverUrl').value;
+
+    var imageURI = "";
+    for (j = 0; j < chkList.length; j++) {
+        imageURI = chkList[j];
+        // Specify transfer options
+        var options = new FileUploadOptions();
+        options.fileKey = "file";
+        options.fileName = imageURI.substr(imageURI.lastIndexOf('/') + 1);
+        options.mimeType = "image/jpeg";
+        options.chunkedMode = false;
+
+        // Transfer picture to server
+        var ft = new FileTransfer();
+        ft.upload(imageURI, server, function (r) {
+            document.getElementById('camera_status').innerHTML = "Upload successful: " + r.bytesSent + " bytes uploaded.[" + r.responseCode + "]-[" + r.response + "]";
+        }, function (error) {
+            document.getElementById('camera_status').innerHTML = "Upload failed: Code = " + error.code + "-" + error.source + "-" + error.target;
+        }, options);
+    }
+
+    tsk_ns.storage.deleteItem("oImagesToUpload");
+
+    return;
 }
