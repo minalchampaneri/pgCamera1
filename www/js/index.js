@@ -12,19 +12,27 @@ var app = {
         app.receivedEvent('deviceready');
     },
     onOnline: function () {
-        mLog("Device is online.");
-        if (tsk_ns.storage.getItem("oImagesToUpload") != null) {
-            if (confirm("You apear online now and you have unsent photos, do you want to send it now?")) {
-                sendOfflineImages();
-            }
-        }
+        app.receivedEvent('online');
     },
     onOffline: function () {
-        mLog("Device is offline.");
+        app.receivedEvent('offline');
     },
     receivedEvent: function (id) {
-        pictureSource = navigator.camera.PictureSourceType;
-        destinationType = navigator.camera.DestinationType;
+        mLog(id);
+        if (id == 'offline') {
+            //do nothing
+        }
+        else if (id == 'online') {
+            if (tsk_ns.storage.getItem("oImagesToUpload") != null) {
+                if (confirm("You apear online now and you have unsent photos, do you want to send it now?")) {
+                    sendOfflineImages();
+                }
+            }    
+        }
+        else {
+            pictureSource = navigator.camera.PictureSourceType;
+            destinationType = navigator.camera.DestinationType;
+        }
     }
 };
 
@@ -64,7 +72,7 @@ function uploadPicture() {
     var chkList = parent.getElementsByTagName("input");
     server = document.getElementById('serverUrl').value;
 
-    if (checkConnection) {
+    if (checkConnection() == true) {
         mLog("Device is online and is about to start uploading");
     }
     else {
@@ -77,7 +85,7 @@ function uploadPicture() {
         if (chkList[j].checked) {
             imageURI = picsCollection[j];
 
-            if (checkConnection) {
+            if (checkConnection() == true) {
                 // Specify transfer options
                 var options = new FileUploadOptions();
                 options.fileKey = "file";
