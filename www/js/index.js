@@ -5,12 +5,22 @@ var app = {
 
     bindEvents: function () {
         document.addEventListener('deviceready', this.onDeviceReady, false);
-        document.addEventListener("online", onOnline, false);
-        document.addEventListener("offline", onOffline, false);
+        document.addEventListener("online", this.onOnline, false);
+        document.addEventListener("offline", this.onOffline, false);
     },
-
     onDeviceReady: function () {
         app.receivedEvent('deviceready');
+    },
+    onOnline: function () {
+        mLog("Device is online.");
+        if (tsk_ns.storage.getItem("oImagesToUpload") != null) {
+            if (confirm("You apear online now and you have unsent photos, do you want to send it now?")) {
+                sendOfflineImages();
+            }
+        }
+    },
+    onOffline: function () {
+        mLog("Device is offline.");
     },
     receivedEvent: function (id) {
         pictureSource = navigator.camera.PictureSourceType;
@@ -54,7 +64,7 @@ function uploadPicture() {
     var chkList = parent.getElementsByTagName("input");
     server = document.getElementById('serverUrl').value;
 
-    if (navigator.onLine) {
+    if (checkConnection) {
         mLog("Device is online and is about to start uploading");
     }
     else {
@@ -67,7 +77,7 @@ function uploadPicture() {
         if (chkList[j].checked) {
             imageURI = picsCollection[j];
 
-            if (navigator.onLine) {
+            if (checkConnection) {
                 // Specify transfer options
                 var options = new FileUploadOptions();
                 options.fileKey = "file";
@@ -89,7 +99,8 @@ function uploadPicture() {
         }
     }
 
-    if (selectURIs.length > 0) {
+    if (selectURIs.length > 0) 
+    {
         // Need to store them offline and will use when back to online.
         tsk_ns.storage.saveItem("oImagesToUpload", JSON.stringify(selectURIs));
     }
@@ -132,22 +143,8 @@ function mLog(msg) {
 
 function clearList() {
     picsCollection.splice(0, picsCollection.length);
+    checkConnection();
     refreshPicList();
-}
-
-function onOnline() {
-    // Handle the online event
-    mLog("Device is online.");
-    if (tsk_ns.storage.getItem("oImagesToUpload") != null) {
-        if (confirm("You apear online now and you have unsent photos, do you want to send it now?")) {
-            sendOfflineImages();
-        }
-    }
-}
-
-function onOffline() {
-    // Handle the offline event
-    mLog("Device is offline.");
 }
 
 function sendOfflineImages() {
@@ -193,4 +190,9 @@ function checkConnection() {
     states[Connection.NONE] = 'No network connection';
 
     mLog('Connection type: ' + states[networkState]);
+
+    if (networkState == Connection.UNKNOWN || networkState == Connection.NONE)
+        return false;
+    else
+        return true;
 }
