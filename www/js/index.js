@@ -5,34 +5,28 @@ var app = {
 
     bindEvents: function () {
         document.addEventListener('deviceready', this.onDeviceReady, false);
-        document.addEventListener("online", this.onOnline, false);
-        document.addEventListener("offline", this.onOffline, false);
+
+    },
+    onOnline: function () {
+        mLog('online');
+        if (tsk_ns.storage.getItem("oImagesToUpload") != null) {
+            if (confirm("You apear online now and you have unsent photos, do you want to send it now?")) {
+                sendOfflineImages();
+            }
+        }
+    },
+    onOffline: function () {
+        mLog('offline');
     },
     onDeviceReady: function () {
         app.receivedEvent('deviceready');
+        document.addEventListener("online", app.onOnline, false);
+        document.addEventListener("offline", app.onOffline, false);
     },
-    onOnline: function () {
-        app.receivedEvent('online');
-    },
-    onOffline: function () {
-        app.receivedEvent('offline');
-    },
+    
     receivedEvent: function (id) {
-        mLog(id);
-        if (id == 'offline') {
-            //do nothing
-        }
-        else if (id == 'online') {
-            if (tsk_ns.storage.getItem("oImagesToUpload") != null) {
-                if (confirm("You apear online now and you have unsent photos, do you want to send it now?")) {
-                    sendOfflineImages();
-                }
-            }    
-        }
-        else {
             pictureSource = navigator.camera.PictureSourceType;
             destinationType = navigator.camera.DestinationType;
-        }
     }
 };
 
