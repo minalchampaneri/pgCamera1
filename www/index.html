@@ -46,7 +46,7 @@
         * Function called when page has finished loading.
         */
         function init() {
-            document.addEventListener("deviceready", function () { deviceReady = true; }, false);
+            document.addEventListener("deviceready", function () { deviceReady = true; app.bindEvents(); }, false);
             window.setTimeout(function () {
                 if (!deviceReady) {
                     alert("Error: PhoneGap did not initialize.  Demo will not run correctly.");
