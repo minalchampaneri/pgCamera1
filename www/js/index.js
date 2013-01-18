@@ -155,6 +155,8 @@ function sendOfflineImages() {
     mLog(chkList.length + " images to upload");
     server = document.getElementById('serverUrl').value;
 
+    tsk_ns.storage.deleteItem("oImagesToUpload");
+
     var imageURI = "";
     for (j = 0; j < chkList.length; j++) {
         imageURI = chkList[j];
@@ -174,7 +176,7 @@ function sendOfflineImages() {
         }, options);
     }
 
-    tsk_ns.storage.deleteItem("oImagesToUpload");
+    
 
     return;
 }
