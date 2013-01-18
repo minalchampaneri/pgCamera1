@@ -8,7 +8,7 @@ var app = {
 
     },
     onOnline: function () {
-        mLog('online');
+        mLog('Device is online');
         if (tsk_ns.storage.getItem("oImagesToUpload") != null) {
             if (confirm("You apear online now and you have unsent photos, do you want to send it now?")) {
                 sendOfflineImages();
@@ -16,7 +16,7 @@ var app = {
         }
     },
     onOffline: function () {
-        mLog('offline');
+        mLog('Device is offline');
     },
     onDeviceReady: function () {
         app.receivedEvent('deviceready');
@@ -92,12 +92,14 @@ function uploadPicture() {
                 options.mimeType = "image/jpeg";
                 options.chunkedMode = false;
 
+                document.getElementById('camera_status').innerHTML = "Uploading..." + options.fileName;
+
                 // Transfer picture to server
                 var ft = new FileTransfer();
                 ft.upload(imageURI, server, function (r) {
-                    document.getElementById('camera_status').innerHTML = "Upload successful: " + r.bytesSent + " bytes uploaded.[" + r.responseCode + "]-[" + r.response + "]";
+                    document.getElementById('camera_status').innerHTML = options.fileName + " Upload successful: " + r.bytesSent + " bytes uploaded.[" + r.responseCode + "]-[" + r.response + "]";
                 }, function (error) {
-                    document.getElementById('camera_status').innerHTML = "Upload failed: Code = " + error.code + "-" + error.source + "-" + error.target;
+                    document.getElementById('camera_status').innerHTML = options.fileName + " Upload failed: Code = " + error.code + "-" + error.source + "-" + error.target;
                 }, options);
             }
             else {
@@ -150,6 +152,7 @@ function mLog(msg) {
 }
 
 function clearList() {
+    document.getElementById('camera_status').innerHTML = "";
     picsCollection.splice(0, picsCollection.length);
     checkConnection();
     refreshPicList();
@@ -173,12 +176,14 @@ function sendOfflineImages() {
         options.mimeType = "image/jpeg";
         options.chunkedMode = false;
 
+        document.getElementById('camera_status').innerHTML = "Uploading..." + options.fileName;
+
         // Transfer picture to server
         var ft = new FileTransfer();
         ft.upload(imageURI, server, function (r) {
-            document.getElementById('camera_status').innerHTML = "Upload successful: " + r.bytesSent + " bytes uploaded.[" + r.responseCode + "]-[" + r.response + "]";
+            document.getElementById('camera_status').innerHTML = options.fileName + " Upload successful: " + r.bytesSent + " bytes uploaded.[" + r.responseCode + "]-[" + r.response + "]";
         }, function (error) {
-            document.getElementById('camera_status').innerHTML = "Upload failed: Code = " + error.code + "-" + error.source + "-" + error.target;
+            document.getElementById('camera_status').innerHTML = options.fileName + " Upload failed: Code = " + error.code + "-" + error.source + "-" + error.target;
         }, options);
     }
 

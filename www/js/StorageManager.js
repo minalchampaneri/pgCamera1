@@ -27,9 +27,7 @@ tsk_ns.storage = function () {
     return {
         saveItem: saveItem,
         getItem: getItem,
-        hasLocalStorage: hasLocalStorage
-
+        hasLocalStorage: hasLocalStorage,
+        deleteItem: deleteItem
     };
-
-
 }();
