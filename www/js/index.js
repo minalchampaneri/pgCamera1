@@ -66,6 +66,11 @@ function uploadPicture() {
     var chkList = parent.getElementsByTagName("input");
     server = document.getElementById('serverUrl').value;
 
+    if (chkList.length <= 0) {
+        mLog("Select photos to upload.");
+        return;
+    }
+
     if (checkConnection() == true) {
         mLog("Device is online and is about to start uploading");
     }
@@ -107,6 +112,7 @@ function uploadPicture() {
         tsk_ns.storage.saveItem("oImagesToUpload", JSON.stringify(selectURIs));
     }
 
+    clearList();
     return;
 }
 
