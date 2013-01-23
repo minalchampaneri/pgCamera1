@@ -92,6 +92,11 @@ function uploadPicture() {
                 options.mimeType = "image/jpeg";
                 options.chunkedMode = false;
 
+                var params = new Object();
+                params.value1 = "AD12345678";
+                params.value2 = "param";
+                options.params = params;
+
                 document.getElementById('camera_status').innerHTML = "Uploading..." + options.fileName;
 
                 // Transfer picture to server
@@ -175,6 +180,11 @@ function sendOfflineImages() {
         options.fileName = imageURI.substr(imageURI.lastIndexOf('/') + 1);
         options.mimeType = "image/jpeg";
         options.chunkedMode = false;
+
+        var params = new Object();
+        params.value1 = "AD12345678";
+        params.value2 = "param";
+        options.params = params;
 
         document.getElementById('camera_status').innerHTML = "Uploading..." + options.fileName;
 
